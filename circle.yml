@@ -17,6 +17,6 @@ test:
 
 deployment:
   maven:
-    branch: develop
+    branch: master
     commands:
       - ~/publish-${PUBLISH_VERSION}/java/publish_maven.sh ~/publish-${PUBLISH_VERSION}/java/
