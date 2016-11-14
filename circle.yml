@@ -3,6 +3,10 @@ machine:
   java:
     version: oraclejdk8
 
+checkout:
+  post:
+    - aws s3 cp s3://gs2-repos/python/publish/${PUBLISH_VERSION}/publish-${PUBLISH_VERSION}.tar.gz ~/ && tar -zxvf ~/publish-${PUBLISH_VERSION}.tar.gz -C ~/
+
 test:
   post:
     - cp ./target/*-javadoc.jar $CIRCLE_ARTIFACTS
@@ -11,4 +15,4 @@ deployment:
   maven:
     branch: develop
     commands:
-      - mvn deploy -DperformRelease=true
+      - ~/publish-${PUBLISH_VERSION}/java/publish_maven.sh ~/publish-${PUBLISH_VERSION}/java/
