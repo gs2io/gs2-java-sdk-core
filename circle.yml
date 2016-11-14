@@ -6,10 +6,3 @@ machine:
 test:
   post:
     - cp ./target/*-javadoc.jar $CIRCLE_ARTIFACTS
-    - cp ./target/site/jacoco $CIRCLE_ARTIFACTS
-
-deployment:
-  maven:
-    branch: master
-    commands:
-      - mvn deploy -DperformRelease=true
