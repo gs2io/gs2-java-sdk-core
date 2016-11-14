@@ -4,6 +4,8 @@ machine:
     version: Java8
 
 test:
+　override:
+    - mvn integration-test
   post:
     - cp ./target/*-javadoc.jar $CIRCLE_ARTIFACTS
     - cp ./target/site/jacoco $CIRCLE_ARTIFACTS
