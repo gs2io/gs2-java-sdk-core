@@ -8,7 +8,7 @@ test:
     - cp ./target/*-javadoc.jar $CIRCLE_ARTIFACTS
     - cp ./target/site/jacoco $CIRCLE_ARTIFACTS
 
-deploy:
+deployment:
   maven:
     branch: master
     commands:
