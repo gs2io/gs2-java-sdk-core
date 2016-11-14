@@ -7,6 +7,10 @@ checkout:
   post:
     - aws s3 cp s3://gs2-repos/python/publish/${PUBLISH_VERSION}/publish-${PUBLISH_VERSION}.tar.gz ~/ && tar -zxvf ~/publish-${PUBLISH_VERSION}.tar.gz -C ~/
 
+dependencies:
+  pre:
+    - sudo apt-get update; sudo apt-get install gpg2
+    
 test:
   post:
     - cp ./target/*-javadoc.jar $CIRCLE_ARTIFACTS
