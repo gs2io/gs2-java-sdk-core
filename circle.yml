@@ -1,0 +1,15 @@
+## Customize the test machine
+machine:
+  java:
+    version: Java8
+
+test:
+  post:
+    - cp ./target/*-javadoc.jar $CIRCLE_ARTIFACTS
+    - cp ./target/site/jacoco $CIRCLE_ARTIFACTS
+
+deploy:
+  maven:
+    branch: master
+    commands:
+      - mvn deploy -DperformRelease=true
