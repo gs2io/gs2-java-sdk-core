@@ -6,3 +6,9 @@ machine:
 test:
   post:
     - cp ./target/*-javadoc.jar $CIRCLE_ARTIFACTS
+
+deployment:
+  maven:
+    branch: develop
+    commands:
+      - mvn deploy -DperformRelease=true
