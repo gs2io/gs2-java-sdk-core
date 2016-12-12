@@ -255,7 +255,7 @@ abstract public class AbstractGs2Client<T extends AbstractGs2Client<?>> {
 	 * @throws InternalServerErrorException 未知のサーバエラーが発生した場合にスローされます
 	 */
 	protected <U> U doRequest(HttpUriRequest request, Class<U> clazz) throws BadRequestException, UnauthorizedException, NotFoundException, InternalServerErrorException {
-		long begin = System.currentTimeMillis();
+//		long begin = System.currentTimeMillis();
 		try {
 			RequestConfig requestConfig = RequestConfig.custom()
 					.setConnectionRequestTimeout(1000 * 30)
@@ -328,8 +328,8 @@ abstract public class AbstractGs2Client<T extends AbstractGs2Client<?>> {
 			throw new RuntimeException("[" + statusCode + "] " + (message == null ? "unknown" : message));
 		} catch(IOException e) {
 			throw new RuntimeException(e);
-		} finally {
-			System.out.println("communication time: " + (System.currentTimeMillis() - begin));
+//		} finally {
+//			System.out.println("communication time: " + (System.currentTimeMillis() - begin));
 		}
 	}
 }
