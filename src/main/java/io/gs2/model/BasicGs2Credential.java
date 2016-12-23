@@ -15,6 +15,11 @@
  */
 package io.gs2.model;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.http.client.methods.HttpUriRequest;
+
+import io.gs2.util.SignUtil;
+
 /**
  * アクセスキーによる認証。
  * 
@@ -35,6 +40,9 @@ public class BasicGs2Credential implements IGs2Credential {
 	 * @param clientSecret クライアントシークレット
 	 */
 	public BasicGs2Credential(String clientId, String clientSecret) {
+		if(clientId == null || clientSecret == null) {
+			throw new IllegalArgumentException("invalid credential");
+		}
 		this.clientId = clientId;
 		this.clientSecret = clientSecret;
 	}
@@ -55,5 +63,13 @@ public class BasicGs2Credential implements IGs2Credential {
 	 */
 	public String getClientSecret() {
 		return clientSecret;
+	}
+
+	@Override
+	public void authorized(HttpUriRequest request, String service, String module, String function, Long timestamp) {
+		String sign = new Base64().encodeAsString(SignUtil.sign(getClientSecret(), module, function, timestamp));
+		request.setHeader("X-GS2-CLIENT-ID", getClientId());
+		request.setHeader("X-GS2-REQUEST-TIMESTAMP", String.valueOf(timestamp));
+		request.setHeader("X-GS2-REQUEST-SIGN", sign);
 	}
 }

@@ -15,6 +15,8 @@
  */
 package io.gs2.model;
 
+import org.apache.http.client.methods.HttpUriRequest;
+
 /**
  * 認証情報。
  * 
@@ -23,7 +25,6 @@ package io.gs2.model;
  */
 public interface IGs2Credential {
 
-	String getClientId();
-	String getClientSecret();
+	public void authorized(HttpUriRequest request, String service, String module, String function, Long timestamp);
 	
 }

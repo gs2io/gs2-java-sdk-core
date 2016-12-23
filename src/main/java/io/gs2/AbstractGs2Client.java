@@ -20,7 +20,6 @@ import java.io.InputStream;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -48,7 +47,6 @@ import io.gs2.exception.ServiceUnavailableException;
 import io.gs2.exception.UnauthorizedException;
 import io.gs2.model.IGs2Credential;
 import io.gs2.model.Region;
-import io.gs2.util.SignUtil;
 
 abstract public class AbstractGs2Client<T extends AbstractGs2Client<?>> {
 
@@ -104,30 +102,13 @@ abstract public class AbstractGs2Client<T extends AbstractGs2Client<?>> {
 	 * @return リクエストオブジェクト
 	 */
 	protected HttpPost createHttpPost(String url, IGs2Credential credential, String service, String module, String function, String body) {
-		if(credential.getClientId()== null || credential.getClientSecret() == null) {
-			throw new UnauthorizedException("invalid credential");
-		}
 		Long timestamp = System.currentTimeMillis()/1000;
-		String sign = new Base64().encodeAsString(SignUtil.sign(credential.getClientSecret(), module, function, timestamp));
 		url = StringUtils.replace(url, "{service}", service);
 		url = StringUtils.replace(url, "{region}", region.getName());
 		HttpPost post = new HttpPost(url);
 		post.setHeader("Content-Type", "application/json");
-		post.setHeader("X-GS2-CLIENT-ID", credential.getClientId());
-		post.setHeader("X-GS2-REQUEST-TIMESTAMP", String.valueOf(timestamp));
-		post.setHeader("X-GS2-REQUEST-SIGN", sign);
+		credential.authorized(post, service, module, function, timestamp);
 		post.setEntity(new StringEntity(body, "UTF-8"));
-		
-//		String curl = "curl ";
-//		curl += "-X POST ";
-//		curl += "-H 'Content-Type: application/json' ";
-//		curl += "-H 'X-GS2-CLIENT-ID: " + credential.getClientId() + "' ";
-//		curl += "-H 'X-GS2-REQUEST-TIMESTAMP: " + String.valueOf(timestamp) + "' ";
-//		curl += "-H 'X-GS2-REQUEST-SIGN: " + sign + "' ";
-//		curl += "--data '" + body + "' ";
-//		curl += url;
-//		System.out.println(curl);
-		
 		return post;
 	}
 
@@ -143,30 +124,13 @@ abstract public class AbstractGs2Client<T extends AbstractGs2Client<?>> {
 	 * @return リクエストオブジェクト
 	 */
 	protected HttpPut createHttpPut(String url, IGs2Credential credential, String service, String module, String function, String body) {
-		if(credential.getClientId()== null || credential.getClientSecret() == null) {
-			throw new UnauthorizedException("invalid credential");
-		}
 		Long timestamp = System.currentTimeMillis()/1000;
-		String sign = new Base64().encodeAsString(SignUtil.sign(credential.getClientSecret(), module, function, timestamp));
 		url = StringUtils.replace(url, "{service}", service);
 		url = StringUtils.replace(url, "{region}", region.getName());
 		HttpPut put = new HttpPut(url);
 		put.setHeader("Content-Type", "application/json");
-		put.setHeader("X-GS2-CLIENT-ID", credential.getClientId());
-		put.setHeader("X-GS2-REQUEST-TIMESTAMP", String.valueOf(timestamp));
-		put.setHeader("X-GS2-REQUEST-SIGN", sign);
+		credential.authorized(put, service, module, function, timestamp);
 		put.setEntity(new StringEntity(body, "UTF-8"));
-
-//		String curl = "curl ";
-//		curl += "-X PUT ";
-//		curl += "-H 'Content-Type: application/json' ";
-//		curl += "-H 'X-GS2-CLIENT-ID: " + credential.getClientId() + "' ";
-//		curl += "-H 'X-GS2-REQUEST-TIMESTAMP: " + String.valueOf(timestamp) + "' ";
-//		curl += "-H 'X-GS2-REQUEST-SIGN: " + sign + "' ";
-//		curl += "--data '" + body + "' ";
-//		curl += url;
-//		System.out.println(curl);
-		
 		return put;
 	}
 
@@ -181,28 +145,12 @@ abstract public class AbstractGs2Client<T extends AbstractGs2Client<?>> {
 	 * @return リクエストオブジェクト
 	 */
 	protected HttpGet createHttpGet(String url, IGs2Credential credential, String service, String module, String function) {
-		if(credential.getClientId()== null || credential.getClientSecret() == null) {
-			throw new UnauthorizedException("invalid credential");
-		}
 		Long timestamp = System.currentTimeMillis()/1000;
-		String sign = new Base64().encodeAsString(SignUtil.sign(credential.getClientSecret(), module, function, timestamp));
 		url = StringUtils.replace(url, "{service}", service);
 		url = StringUtils.replace(url, "{region}", region.getName());
 		HttpGet get = new HttpGet(url);
 		get.setHeader("Content-Type", "application/json");
-		get.setHeader("X-GS2-CLIENT-ID", credential.getClientId());
-		get.setHeader("X-GS2-REQUEST-TIMESTAMP", String.valueOf(timestamp));
-		get.setHeader("X-GS2-REQUEST-SIGN", sign);
-
-//		String curl = "curl ";
-//		curl += "-X GET ";
-//		curl += "-H 'Content-Type: application/json' ";
-//		curl += "-H 'X-GS2-CLIENT-ID: " + credential.getClientId() + "' ";
-//		curl += "-H 'X-GS2-REQUEST-TIMESTAMP: " + String.valueOf(timestamp) + "' ";
-//		curl += "-H 'X-GS2-REQUEST-SIGN: " + sign + "' ";
-//		curl += url;
-//		System.out.println(curl);
-		
+		credential.authorized(get, service, module, function, timestamp);
 		return get;
 	}
 
@@ -217,28 +165,12 @@ abstract public class AbstractGs2Client<T extends AbstractGs2Client<?>> {
 	 * @return リクエストオブジェクト
 	 */
 	protected HttpDelete createHttpDelete(String url, IGs2Credential credential, String service, String module, String function) {
-		if(credential.getClientId()== null || credential.getClientSecret() == null) {
-			throw new UnauthorizedException("invalid credential");
-		}
 		Long timestamp = System.currentTimeMillis()/1000;
-		String sign = new Base64().encodeAsString(SignUtil.sign(credential.getClientSecret(), module, function, timestamp));
 		url = StringUtils.replace(url, "{service}", service);
 		url = StringUtils.replace(url, "{region}", region.getName());
 		HttpDelete delete = new HttpDelete(url);
 		delete.setHeader("Content-Type", "application/json");
-		delete.setHeader("X-GS2-CLIENT-ID", credential.getClientId());
-		delete.setHeader("X-GS2-REQUEST-TIMESTAMP", String.valueOf(timestamp));
-		delete.setHeader("X-GS2-REQUEST-SIGN", sign);
-
-//		String curl = "curl ";
-//		curl += "-X DELETE ";
-//		curl += "-H 'Content-Type: application/json' ";
-//		curl += "-H 'X-GS2-CLIENT-ID: " + credential.getClientId() + "' ";
-//		curl += "-H 'X-GS2-REQUEST-TIMESTAMP: " + String.valueOf(timestamp) + "' ";
-//		curl += "-H 'X-GS2-REQUEST-SIGN: " + sign + "' ";
-//		curl += url;
-//		System.out.println(curl);
-		
+		credential.authorized(delete, service, module, function, timestamp);
 		return delete;
 	}
 
@@ -255,7 +187,6 @@ abstract public class AbstractGs2Client<T extends AbstractGs2Client<?>> {
 	 * @throws InternalServerErrorException 未知のサーバエラーが発生した場合にスローされます
 	 */
 	protected <U> U doRequest(HttpUriRequest request, Class<U> clazz) throws BadRequestException, UnauthorizedException, NotFoundException, InternalServerErrorException {
-//		long begin = System.currentTimeMillis();
 		try {
 			RequestConfig requestConfig = RequestConfig.custom()
 					.setConnectionRequestTimeout(1000 * 30)
@@ -280,10 +211,6 @@ abstract public class AbstractGs2Client<T extends AbstractGs2Client<?>> {
 					if(statusCode == 200) {
 						if(clazz == null) return null;
 						try (InputStream in = response.getEntity().getContent()) {
-//							byte[] b = new byte[in.available()];
-//							in.read(b);
-//							System.out.println(new String(b));
-//							return mapper.readValue(new String(b), clazz);
 							return mapper.readValue(in, clazz);
 						} catch(Exception e) {
 							e.printStackTrace();
@@ -328,8 +255,6 @@ abstract public class AbstractGs2Client<T extends AbstractGs2Client<?>> {
 			throw new RuntimeException("[" + statusCode + "] " + (message == null ? "unknown" : message));
 		} catch(IOException e) {
 			throw new RuntimeException(e);
-//		} finally {
-//			System.out.println("communication time: " + (System.currentTimeMillis() - begin));
 		}
 	}
 }
