@@ -51,6 +51,6 @@ public class OnetimeTokenGs2Credential implements IGs2Credential {
 
 	@Override
 	public void authorized(HttpUriRequest request, String service, String module, String function, Long timestamp) {
-		request.setHeader("X-GS2-ONETIME-TOKEN", token);		
+		request.setHeader("X-GS2-ONETIME-TOKEN", token);
 	}
 }
