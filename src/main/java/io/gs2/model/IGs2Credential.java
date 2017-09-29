@@ -15,6 +15,8 @@
  */
 package io.gs2.model;
 
+import java.io.Serializable;
+
 import org.apache.http.client.methods.HttpUriRequest;
 
 /**
@@ -23,7 +25,7 @@ import org.apache.http.client.methods.HttpUriRequest;
  * @author Game Server Services, Inc.
  *
  */
-public interface IGs2Credential {
+public interface IGs2Credential extends Serializable {
 
 	public void authorized(HttpUriRequest request, String service, String module, String function, Long timestamp);
 	
