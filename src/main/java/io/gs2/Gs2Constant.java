@@ -33,6 +33,6 @@ public class Gs2Constant {
 	public static final int RETRY_WAIT = 1000;
 	
 	/** APIエンドポイント */
-	public static final String ENDPOINT_HOST = "https://{service}.{region}.gs2.io";
+	public static final String ENDPOINT_HOST = "https://{service}.{region}.gs2io.com";
 
 }
