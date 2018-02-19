@@ -63,7 +63,7 @@ public class Gs2BasicRequestSupport {
 
 	/**
 	 * GS2認証署名を取得。
-	 * 
+	 *
 	 * @param request リクエストオブジェクト
 	 * @return GS2認証署名
 	 */
@@ -74,7 +74,7 @@ public class Gs2BasicRequestSupport {
 	/**
 	 * GS2認証署名を設定。
 	 * 通常は自動的に計算されるため、この値を設定する必要はありません。
-	 * 
+	 *
 	 * @param request リクエストオブジェクト
 	 * @param xGs2RequestSign GS2認証署名
 	 */

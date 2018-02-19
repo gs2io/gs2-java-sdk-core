@@ -21,11 +21,13 @@ import java.io.Serializable;
 abstract public class Gs2BasicRequest<T extends Gs2BasicRequest<?>> implements Serializable {
 
 	/** GS2認証クライアントID */
-	String xGs2ClientId;
+	private String xGs2ClientId;
 	/** タイムスタンプ */
-	Long xGs2Timestamp;
-	/** GS2認証署名 */
-	String xGs2RequestSign;
+	private Long xGs2Timestamp;
+    /** GS2認証署名 */
+    private String xGs2RequestSign;
+    /** GS2リクエストID */
+    private String xGs2RequestId;
 	
 	/**
 	 * GS2認証クライアントIDを取得。
@@ -40,7 +42,7 @@ abstract public class Gs2BasicRequest<T extends Gs2BasicRequest<?>> implements S
 	 * GS2認証クライアントIDを設定。
 	 * 通常は自動的に計算されるため、この値を設定する必要はありません。
 	 * 
-	 * @param name GS2認証クライアントID
+	 * @param xGs2ClientId GS2認証クライアントID
 	 */
 	@Deprecated
 	void setxGs2ClientId(String xGs2ClientId) {
@@ -93,37 +95,66 @@ abstract public class Gs2BasicRequest<T extends Gs2BasicRequest<?>> implements S
 		return (T)this;
 	}
 
-	/**
-	 * GS2認証署名を取得。
-	 * 
-	 * @return GS2認証署名
-	 */
-	String getxGs2RequestSign() {
-		return xGs2RequestSign;
-	}
+    /**
+     * GS2認証署名を取得。
+     *
+     * @return GS2認証署名
+     */
+    String getxGs2RequestSign() {
+        return xGs2RequestSign;
+    }
 
-	/**
-	 * GS2認証署名を設定。
-	 * 通常は自動的に計算されるため、この値を設定する必要はありません。
-	 * 
-	 * @param name GS2認証署名
-	 */
-	@Deprecated
-	void setxGs2RequestSign(String xGs2RequestSign) {
-		this.xGs2RequestSign = xGs2RequestSign;
-	}
+    /**
+     * GS2認証署名を設定。
+     * 通常は自動的に計算されるため、この値を設定する必要はありません。
+     *
+     * @param xGs2RequestSign GS2認証署名
+     */
+    @Deprecated
+    void setxGs2RequestSign(String xGs2RequestSign) {
+        this.xGs2RequestSign = xGs2RequestSign;
+    }
 
-	/**
-	 * GS2認証署名を設定。
-	 * 通常は自動的に計算されるため、この値を設定する必要はありません。
-	 * 
-	 * @param name GS2認証署名
-	 */
-	@Deprecated
-	@SuppressWarnings("unchecked")
-	T withxGs2RequestSign(String xGs2RequestSign) {
-		setxGs2RequestSign(xGs2RequestSign);
-		return (T)this;
-	}
+    /**
+     * GS2認証署名を設定。
+     * 通常は自動的に計算されるため、この値を設定する必要はありません。
+     *
+     * @param xGs2RequestSign GS2認証署名
+     */
+    @Deprecated
+    @SuppressWarnings("unchecked")
+    T withxGs2RequestSign(String xGs2RequestSign) {
+        setxGs2RequestSign(xGs2RequestSign);
+        return (T)this;
+    }
+
+    /**
+     * GS2リクエストIDを取得。
+     *
+     * @return GS2リクエストID
+     */
+    public String getRequestId() {
+        return xGs2RequestId;
+    }
+
+    /**
+     * GS2リクエストIDを設定。
+     *
+     * @param xGs2RequestId GS2リクエストID
+     */
+    public void setRequestId(String xGs2RequestId) {
+        this.xGs2RequestId = xGs2RequestId;
+    }
+
+    /**
+     * GS2リクエストIDを設定。
+     *
+     * @param xGs2RequestId GS2リクエストID
+     */
+    @SuppressWarnings("unchecked")
+    public T withRequestId(String xGs2RequestId) {
+        setRequestId(xGs2RequestId);
+        return (T)this;
+    }
 
 }
