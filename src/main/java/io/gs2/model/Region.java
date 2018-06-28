@@ -15,6 +15,8 @@
  */
 package io.gs2.model;
 
+import java.util.Objects;
+
 /**
  * リージョン情報
  * 
@@ -39,5 +41,14 @@ public enum Region {
 
 	public String getName() {
 		return name;
+	}
+
+	public static Region prettyValueOf(String value) {
+		for(Region region : Region.values()) {
+			if(Objects.equals(region.name, value)) {
+				return region;
+			}
+		}
+		return AP_NORTHEAST_1;
 	}
 }

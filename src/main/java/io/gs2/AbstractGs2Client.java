@@ -54,12 +54,22 @@ abstract public class AbstractGs2Client<T extends AbstractGs2Client<?>> {
 	protected IGs2Credential credential;
 	/** アクセス先リージョン */
 	protected Region region;
-	
+
 	public AbstractGs2Client(IGs2Credential credential) {
 		this.credential = credential;
 		this.region = Region.AP_NORTHEAST_1;
 	}
-	
+
+	public AbstractGs2Client(IGs2Credential credential, Region region) {
+		this.credential = credential;
+		this.region = region;
+	}
+
+	public AbstractGs2Client(IGs2Credential credential, String region) {
+		this.credential = credential;
+		this.region = Region.prettyValueOf(region);
+	}
+
 	/**
 	 * アクセス先リージョンを取得
 	 * 
