@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
@@ -265,6 +266,21 @@ abstract public class AbstractGs2Client<T extends AbstractGs2Client<?>> {
 			throw new RuntimeException("[" + statusCode + "] " + (message == null ? "unknown" : message));
 		} catch(IOException e) {
 			throw new RuntimeException(e);
+		}
+	}
+
+	protected static String toString(List<String> strings)
+	{
+		int size = strings.size();
+		if (size > 0) {
+			StringBuilder stringBuilder = new StringBuilder();
+			stringBuilder.append(strings.get(0));
+			for (int i = 1; i < size; ++i) {
+				stringBuilder.append(",").append(strings.get(i));
+			}
+			return stringBuilder.toString();
+		} else {
+			return "";
 		}
 	}
 }
