@@ -15,6 +15,7 @@
  */
 package io.gs2;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketTimeoutException;
@@ -112,7 +113,7 @@ abstract public class AbstractGs2Client<T extends AbstractGs2Client<?>> {
 	 * @return リクエストオブジェクト
 	 */
 	protected HttpPost createHttpPost(String url, IGs2Credential credential, String service, String module, String function, String body) {
-		Long timestamp = System.currentTimeMillis()/1000;
+		Long timestamp = System.currentTimeMillis();
 		url = StringUtils.replace(url, "{service}", service);
 		url = StringUtils.replace(url, "{region}", region.getName());
 		HttpPost post = new HttpPost(url);
@@ -134,7 +135,7 @@ abstract public class AbstractGs2Client<T extends AbstractGs2Client<?>> {
 	 * @return リクエストオブジェクト
 	 */
 	protected HttpPut createHttpPut(String url, IGs2Credential credential, String service, String module, String function, String body) {
-		Long timestamp = System.currentTimeMillis()/1000;
+		Long timestamp = System.currentTimeMillis();
 		url = StringUtils.replace(url, "{service}", service);
 		url = StringUtils.replace(url, "{region}", region.getName());
 		HttpPut put = new HttpPut(url);
@@ -155,7 +156,7 @@ abstract public class AbstractGs2Client<T extends AbstractGs2Client<?>> {
 	 * @return リクエストオブジェクト
 	 */
 	protected HttpGet createHttpGet(String url, IGs2Credential credential, String service, String module, String function) {
-		Long timestamp = System.currentTimeMillis()/1000;
+		Long timestamp = System.currentTimeMillis();
 		url = StringUtils.replace(url, "{service}", service);
 		url = StringUtils.replace(url, "{region}", region.getName());
 		HttpGet get = new HttpGet(url);
@@ -175,7 +176,7 @@ abstract public class AbstractGs2Client<T extends AbstractGs2Client<?>> {
 	 * @return リクエストオブジェクト
 	 */
 	protected HttpDelete createHttpDelete(String url, IGs2Credential credential, String service, String module, String function) {
-		Long timestamp = System.currentTimeMillis()/1000;
+		Long timestamp = System.currentTimeMillis();
 		url = StringUtils.replace(url, "{service}", service);
 		url = StringUtils.replace(url, "{region}", region.getName());
 		HttpDelete delete = new HttpDelete(url);
@@ -198,6 +199,7 @@ abstract public class AbstractGs2Client<T extends AbstractGs2Client<?>> {
 	 */
 	protected <U> U doRequest(HttpUriRequest request, Class<U> clazz) throws BadRequestException, UnauthorizedException, NotFoundException, InternalServerErrorException {
 		try {
+//			System.out.println(request.getURI());
 			RequestConfig requestConfig = RequestConfig.custom()
 					.setConnectionRequestTimeout(1000 * 30)
 					.setConnectTimeout(1000 * 30)
@@ -221,7 +223,17 @@ abstract public class AbstractGs2Client<T extends AbstractGs2Client<?>> {
 					if(statusCode == 200) {
 						if(clazz == null) return null;
 						try (InputStream in = response.getEntity().getContent()) {
-							return mapper.readValue(in, clazz);
+							byte[] b;
+							try (ByteArrayOutputStream bout = new ByteArrayOutputStream()) {
+								while (true) {
+									int read = in.read();
+									if (read == -1) break;
+									bout.write(read);
+								}
+								b = bout.toByteArray();
+							}
+//							System.out.println(new String(b));
+							return mapper.readValue(b, clazz);
 						} catch(Exception e) {
 							e.printStackTrace();
 						}

@@ -150,6 +150,7 @@ abstract public class Gs2BasicRequest<T extends Gs2BasicRequest<?>> implements S
      * GS2リクエストIDを設定。
      *
      * @param xGs2RequestId GS2リクエストID
+	 * @return this
      */
     @SuppressWarnings("unchecked")
     public T withRequestId(String xGs2RequestId) {
