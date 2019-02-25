@@ -33,6 +33,6 @@ public class Gs2Constant {
 	public static final int RETRY_WAIT = 1000;
 	
 	/** APIエンドポイント */
-	public static final String ENDPOINT_HOST = "https://asia-northeast1-gs2-{service}-on-gcp.cloudfunctions.net";
+	public static final String ENDPOINT_HOST = "https://asia-northeast1-gs2-on-gcp.cloudfunctions.net";
 
 }
