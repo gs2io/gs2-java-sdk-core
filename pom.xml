@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>io.gs2</groupId>
 	<artifactId>gs2-java-sdk-core-on-gcp</artifactId>
-	<version>0.5.4</version>
+	<version>0.5.5</version>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>

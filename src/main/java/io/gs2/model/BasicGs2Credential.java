@@ -15,10 +15,7 @@
  */
 package io.gs2.model;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.http.client.methods.HttpUriRequest;
-
-import io.gs2.util.SignUtil;
 
 /**
  * アクセスキーによる認証。
@@ -32,6 +29,8 @@ public class BasicGs2Credential implements IGs2Credential {
 	String clientId;
 	/** クライアントシークレット */
 	String clientSecret;
+	/** プロジェクトトークン */
+	String projectToken;
 	
 	/**
 	 * コンストラクタ。
@@ -55,21 +54,37 @@ public class BasicGs2Credential implements IGs2Credential {
 	public String getClientId() {
 		return clientId;
 	}
-	
+
 	/**
 	 * クライアントシークレットを取得。
-	 * 
+	 *
 	 * @return クライアントシークレット
 	 */
 	public String getClientSecret() {
 		return clientSecret;
 	}
 
+	/**
+	 * プロジェクトトークンを取得。
+	 *
+	 * @return プロジェクトトークン
+	 */
+	public String getProjectToken() {
+		return projectToken;
+	}
+
+
+	/**
+	 * プロジェクトトークンを設定。
+	 * @param projectToken プロジェクトトークン
+	 */
+	public void setProjectToken(String projectToken) {
+		this.projectToken = projectToken;
+	}
+
 	@Override
-	public void authorized(HttpUriRequest request, String service, String module, String function, Long timestamp) {
-		String sign = new Base64().encodeAsString(SignUtil.sign(getClientSecret(), module, function, timestamp));
+	public void authorized(HttpUriRequest request) {
 		request.setHeader("X-GS2-CLIENT-ID", getClientId());
-		request.setHeader("X-GS2-REQUEST-TIMESTAMP", String.valueOf(timestamp));
-		request.setHeader("X-GS2-REQUEST-SIGN", sign);
+		request.setHeader("X-GS2-PROJECT-TOKEN", getProjectToken());
 	}
 }

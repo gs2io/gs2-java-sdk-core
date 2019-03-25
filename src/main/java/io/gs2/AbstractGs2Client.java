@@ -15,39 +15,28 @@
  */
 package io.gs2;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
+import io.gs2.exception.*;
+import io.gs2.model.IGs2Credential;
+import io.gs2.model.LoginResult;
+import io.gs2.model.Region;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.*;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClientBuilder;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.TextNode;
-
-import io.gs2.exception.BadGatewayException;
-import io.gs2.exception.BadRequestException;
-import io.gs2.exception.ConflictException;
-import io.gs2.exception.InternalServerErrorException;
-import io.gs2.exception.NotFoundException;
-import io.gs2.exception.QuotaExceedException;
-import io.gs2.exception.RequestTimeoutException;
-import io.gs2.exception.ServiceUnavailableException;
-import io.gs2.exception.UnauthorizedException;
-import io.gs2.model.IGs2Credential;
-import io.gs2.model.Region;
 
 abstract public class AbstractGs2Client<T extends AbstractGs2Client<?>> {
 
@@ -59,16 +48,42 @@ abstract public class AbstractGs2Client<T extends AbstractGs2Client<?>> {
 	public AbstractGs2Client(IGs2Credential credential) {
 		this.credential = credential;
 		this.region = Region.AP_NORTHEAST_1;
+
+		this.login();
 	}
 
 	public AbstractGs2Client(IGs2Credential credential, Region region) {
 		this.credential = credential;
 		this.region = region;
+
+		this.login();
 	}
 
 	public AbstractGs2Client(IGs2Credential credential, String region) {
 		this.credential = credential;
 		this.region = Region.prettyValueOf(region);
+
+		this.login();
+	}
+
+	private void login() {
+
+		String url = Gs2Constant.ENDPOINT_HOST + "/identifier-handler?handler=gs2_identifier%2Fhandler%2FProjectTokenFunctionHandler.login";
+
+		ObjectNode _body = JsonNodeFactory.instance.objectNode();
+		if(this.credential.getClientId() != null) {
+			_body.put("clientId", this.credential.getClientId());
+		}
+		if(this.credential.getClientSecret() != null) {
+			_body.put("clientSecret", this.credential.getClientSecret());
+		}
+		HttpPost http = createHttpPost(
+				url,
+				"identifier",
+				_body.toString()
+		);
+		LoginResult result = doRequest(http, LoginResult.class);
+		this.credential.setProjectToken(result.getItem().getToken());
 	}
 
 	/**
@@ -105,20 +120,16 @@ abstract public class AbstractGs2Client<T extends AbstractGs2Client<?>> {
 	 * POSTリクエストを生成
 	 * 
 	 * @param url アクセス先URL
-	 * @param credential 認証情報
 	 * @param service アクセス先サービス
-	 * @param module アクセス先モジュール
-	 * @param function アクセス先ファンクション
 	 * @param body リクエストボディ
 	 * @return リクエストオブジェクト
 	 */
-	protected HttpPost createHttpPost(String url, IGs2Credential credential, String service, String module, String function, String body) {
-		Long timestamp = System.currentTimeMillis();
+	protected HttpPost createHttpPost(String url, String service, String body) {
 		url = StringUtils.replace(url, "{service}", service);
 		url = StringUtils.replace(url, "{region}", region.getName());
 		HttpPost post = new HttpPost(url);
 		post.setHeader("Content-Type", "application/json");
-		credential.authorized(post, service, module, function, timestamp);
+		credential.authorized(post);
 		post.setEntity(new StringEntity(body, "UTF-8"));
 		return post;
 	}
@@ -127,20 +138,16 @@ abstract public class AbstractGs2Client<T extends AbstractGs2Client<?>> {
 	 * POSTリクエストを生成
 	 * 
 	 * @param url アクセス先URL
-	 * @param credential 認証情報
 	 * @param service アクセス先サービス
-	 * @param module アクセス先モジュール
-	 * @param function アクセス先ファンクション
 	 * @param body リクエストボディ
 	 * @return リクエストオブジェクト
 	 */
-	protected HttpPut createHttpPut(String url, IGs2Credential credential, String service, String module, String function, String body) {
-		Long timestamp = System.currentTimeMillis();
+	protected HttpPut createHttpPut(String url, String service, String body) {
 		url = StringUtils.replace(url, "{service}", service);
 		url = StringUtils.replace(url, "{region}", region.getName());
 		HttpPut put = new HttpPut(url);
 		put.setHeader("Content-Type", "application/json");
-		credential.authorized(put, service, module, function, timestamp);
+		credential.authorized(put);
 		put.setEntity(new StringEntity(body, "UTF-8"));
 		return put;
 	}
@@ -149,19 +156,15 @@ abstract public class AbstractGs2Client<T extends AbstractGs2Client<?>> {
 	 * GETリクエストを生成
 	 * 
 	 * @param url アクセス先URL
-	 * @param credential 認証情報
 	 * @param service アクセス先サービス
-	 * @param module アクセス先モジュール
-	 * @param function アクセス先ファンクション
 	 * @return リクエストオブジェクト
 	 */
-	protected HttpGet createHttpGet(String url, IGs2Credential credential, String service, String module, String function) {
-		Long timestamp = System.currentTimeMillis();
+	protected HttpGet createHttpGet(String url, String service) {
 		url = StringUtils.replace(url, "{service}", service);
 		url = StringUtils.replace(url, "{region}", region.getName());
 		HttpGet get = new HttpGet(url);
 		get.setHeader("Content-Type", "application/json");
-		credential.authorized(get, service, module, function, timestamp);
+		credential.authorized(get);
 		return get;
 	}
 
@@ -169,19 +172,15 @@ abstract public class AbstractGs2Client<T extends AbstractGs2Client<?>> {
 	 * DELETEリクエストを生成
 	 * 
 	 * @param url アクセス先URL
-	 * @param credential 認証情報
 	 * @param service アクセス先サービス
-	 * @param module アクセス先モジュール
-	 * @param function アクセス先ファンクション
 	 * @return リクエストオブジェクト
 	 */
-	protected HttpDelete createHttpDelete(String url, IGs2Credential credential, String service, String module, String function) {
-		Long timestamp = System.currentTimeMillis();
+	protected HttpDelete createHttpDelete(String url, String service) {
 		url = StringUtils.replace(url, "{service}", service);
 		url = StringUtils.replace(url, "{region}", region.getName());
 		HttpDelete delete = new HttpDelete(url);
 		delete.setHeader("Content-Type", "application/json");
-		credential.authorized(delete, service, module, function, timestamp);
+		credential.authorized(delete);
 		return delete;
 	}
 
@@ -199,7 +198,6 @@ abstract public class AbstractGs2Client<T extends AbstractGs2Client<?>> {
 	 */
 	protected <U> U doRequest(HttpUriRequest request, Class<U> clazz) throws BadRequestException, UnauthorizedException, NotFoundException, InternalServerErrorException {
 		try {
-//			System.out.println(request.getURI());
 			RequestConfig requestConfig = RequestConfig.custom()
 					.setConnectionRequestTimeout(1000 * 30)
 					.setConnectTimeout(1000 * 30)

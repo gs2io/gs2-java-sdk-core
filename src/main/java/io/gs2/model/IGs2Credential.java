@@ -15,9 +15,9 @@
  */
 package io.gs2.model;
 
-import java.io.Serializable;
-
 import org.apache.http.client.methods.HttpUriRequest;
+
+import java.io.Serializable;
 
 /**
  * 認証情報。
@@ -27,6 +27,14 @@ import org.apache.http.client.methods.HttpUriRequest;
  */
 public interface IGs2Credential extends Serializable {
 
-	public void authorized(HttpUriRequest request, String service, String module, String function, Long timestamp);
-	
+	void authorized(HttpUriRequest request);
+
+	String getClientId();
+
+	String getClientSecret();
+
+	String getProjectToken();
+
+	void setProjectToken(String projectToken);
+
 }
